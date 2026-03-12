@@ -31,7 +31,9 @@ import org.testng.Reporter;
 public class allUtility {
 	private ChromeDriver wdriver;
 	private Properties pro;
-	String filepath = "C:\\Users\\ganes\\eclipse-workspace\\Genefied\\src\\test\\java\\com\\genefied\\Utility\\TestProperty.properties";
+//	String filepath = "C:\\Users\\ganes\\eclipse-workspace\\Genefied\\src\\test\\java\\com\\genefied\\Utility\\TestProperty.properties";
+	
+	String filepath = System.getProperty("user.dir") + "/src/test/java/com/genefied/Utility/Config.properties";
 
 	public void webclosure() {
 		wdriver.quit();
@@ -41,12 +43,18 @@ public class allUtility {
 //		WebDriverManager.chromedriver().setup();
 //		wdriver = new ChromeDriver();
 		ChromeOptions options = new ChromeOptions();
-        wdriver = new ChromeDriver(options);
-		wdriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30)); 
+		String headless = System.getenv("HEADLESS");
+		if("true".equalsIgnoreCase(headless)) {
+		options.addArguments("--headless=new");
+		options.addArguments("--no-sandbox");
+		options.addArguments("--disable-dev-shm-usage");
+		}
+		wdriver = new ChromeDriver(options);
+		wdriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+		wdriver.manage().window().maximize();
 		Thread.sleep(300);
 		return wdriver;
 	}
-	
 
 //	public void response() {
 //	    DevTools devTools = wdriver.getDevTools();
@@ -114,32 +122,33 @@ public class allUtility {
 //
 //	}
 
-	public void checkPagination(int totalrow, int rowposition, AtomicReference<String> responseBody ,String bodytype) throws InterruptedException {
+	public void checkPagination(int totalrow, int rowposition, AtomicReference<String> responseBody, String bodytype)
+			throws InterruptedException {
 
 		// xpath should be of unique code in every column and it should be repeat every
 		// time at same position
 		// totalrows is Number of rows in the page
 		// rowposition is position of that unique code in one column , mark 1 row 1
 		// column as 0 and then count
-	
+
 		WebElement noOfRows = wdriver.findElement(By.xpath("//select[@aria-label='Rows per page:']"));
 		Select select = new Select(noOfRows);
 		select.selectByValue("30");
 		Thread.sleep(5000);
-		String xpath="//div[@role='cell']";
+		String xpath = "//div[@role='cell']";
 		String responseBodys = responseBody.get();
 		int totalProducts = 0;
 		if (responseBodys != null) {
 			JSONObject jsonResponse = new JSONObject(responseBodys);
 			JSONObject bodyObject = jsonResponse.getJSONObject("body");
-	            String totalProductsString = bodyObject.getString(bodytype);
+			String totalProductsString = bodyObject.getString(bodytype);
 //			String totalProductsString = bodyObject.getString("total");
 			totalProducts = Integer.parseInt(totalProductsString);
 			System.out.println("Total Products: " + totalProducts);
-			
-			int producton1page=totalProducts-30;
-			int producton2page=producton1page-30;
-			
+
+			int producton1page = totalProducts - 30;
+			int producton2page = producton1page - 30;
+
 			List<WebElement> cell = wdriver.findElements(By.xpath(xpath));
 			List<String> listOfProductcode = new ArrayList<>();
 
@@ -150,62 +159,25 @@ public class allUtility {
 				String productCode = cell.get(elementposition).getText();
 				listOfProductcode.add(productCode);
 			}
-			
 
 			List<WebElement> columncount = wdriver.findElements(By.xpath(xpath));
 			int intcolumncount = columncount.size() / totalrow;
-			
-			if(producton1page<0) {
+
+			if (producton1page < 0) {
 				Reporter.log("Item is Less than 30 No need To test pagination", true);
 			}
-			
-			if (intcolumncount == 30 & producton1page>0 ) {
+
+			if (intcolumncount == 30 & producton1page > 0) {
 				wdriver.findElement(By.id("pagination-next-page")).click();
 
 				Thread.sleep(2000);
 
 				List<WebElement> columncountnextpage = wdriver.findElements(By.xpath(xpath));
 				int intcolumncountnextpage = columncountnextpage.size() / totalrow;
-				
-				if(producton2page<0) {
-				
-				if (intcolumncountnextpage == producton1page ) {
-					List<WebElement> cellnext = wdriver.findElements(By.xpath(xpath));
-					int rownext = cellnext.size() / totalrow;
-					int mismatchCount = 0;
 
-					for (int i = 0; i < rownext; i++) {
+				if (producton2page < 0) {
 
-						int elementposition = i * totalrow + rowposition;
-						String productCodenext = cellnext.get(elementposition).getText();
-						boolean foundMatch = false;
-
-						for (int k = 0; k < listOfProductcode.size(); k++) {
-							String matching = listOfProductcode.get(k);
-							if (matching.equals(productCodenext)) {
-								foundMatch = true;
-								break;
-							}
-						}
-
-						if (!foundMatch) {
-							mismatchCount++;
-						}
-					}
-
-					if (mismatchCount > 0) {
-						Reporter.log("Pagination Is Working", true);
-					} else {
-						Reporter.log("❌ Pagination Is Not Working", true);
-					}
-				} else {
-					Reporter.log("❌ Next Page Button is not working", true);
-				}
-				
-				}
-				else if(producton2page>=0) {
-					
-					if (intcolumncountnextpage == 30 ) {
+					if (intcolumncountnextpage == producton1page) {
 						List<WebElement> cellnext = wdriver.findElements(By.xpath(xpath));
 						int rownext = cellnext.size() / totalrow;
 						int mismatchCount = 0;
@@ -237,91 +209,53 @@ public class allUtility {
 					} else {
 						Reporter.log("❌ Next Page Button is not working", true);
 					}
-					
+
+				} else if (producton2page >= 0) {
+
+					if (intcolumncountnextpage == 30) {
+						List<WebElement> cellnext = wdriver.findElements(By.xpath(xpath));
+						int rownext = cellnext.size() / totalrow;
+						int mismatchCount = 0;
+
+						for (int i = 0; i < rownext; i++) {
+
+							int elementposition = i * totalrow + rowposition;
+							String productCodenext = cellnext.get(elementposition).getText();
+							boolean foundMatch = false;
+
+							for (int k = 0; k < listOfProductcode.size(); k++) {
+								String matching = listOfProductcode.get(k);
+								if (matching.equals(productCodenext)) {
+									foundMatch = true;
+									break;
+								}
+							}
+
+							if (!foundMatch) {
+								mismatchCount++;
+							}
+						}
+
+						if (mismatchCount > 0) {
+							Reporter.log("Pagination Is Working", true);
+						} else {
+							Reporter.log("❌ Pagination Is Not Working", true);
+						}
+					} else {
+						Reporter.log("❌ Next Page Button is not working", true);
 					}
-				
+
+				}
+
 			} else {
 				Reporter.log("❌ 'Numbers of Column on Page' Dropdown is not working", true);
 			}
-			
-			
-			
-			
+
 		} else {
 			System.out.println("For Pagination No response body captured.");
 		}
-		
-		
-	}
-	
-//	public void checkPagination (String xpath,int totalrow,int rowposition) throws InterruptedException {
-//		
-//		//xpath should be of unique code in every column and it should be repeat every time at same position
-//		//totalrows is Number of rows in the page 
-//		//rowposition is position of that unique code in one column , mark 1 row 1 column as 0 and then count
-//		WebElement noOfRows=wdriver.findElement(By.xpath("//select[@aria-label='Rows per page:']"));
-//		Select select=new Select(noOfRows);
-//		select.selectByValue("30");
-//		Thread.sleep(2000);
-//		List<WebElement> cell = wdriver.findElements(By.xpath(xpath));
-//		List<String> listOfProductcode = new ArrayList<>();
-//
-//		int row = cell.size() / totalrow;
-//		
-//		for (int i = 0; i < row; i++) {
-//		    int elementposition = i * totalrow + rowposition; 
-//		    String productCode = cell.get(elementposition).getText();
-//		    listOfProductcode.add(productCode);
-//		}
-////
-////		String lastnumber = wdriver.findElement(By.xpath("//div[contains(text(),'30')]")).getText();
-//		List<WebElement> columncount = wdriver.findElements(By.xpath(xpath));
-//		int intcolumncount = columncount.size() / totalrow;
-//		if (intcolumncount==30) {
-//		    clickWeb_ElementById("pagination-next-page");
-//		    
-//		    Thread.sleep(2000);
-//
-////		    String nextnumber = wdriver.findElement(By.xpath("//div[contains(text(),'60')]")).getText();
-//		    List<WebElement> columncountnextpage = wdriver.findElements(By.xpath(xpath));
-//			int intcolumncountnextpage = columncountnextpage.size() / totalrow;
-//		    if (intcolumncountnextpage==30) {
-//		        List<WebElement> cellnext = wdriver.findElements(By.xpath(xpath));
-//		        int rownext = cellnext.size() / totalrow;
-//		        int mismatchCount = 0; 
-//		        
-//		        for (int i = 0; i < rownext; i++) {
-//		        	
-//		            int elementposition = i * totalrow + rowposition;
-//		            String productCodenext = cellnext.get(elementposition).getText();
-//		            boolean foundMatch = false;
-//		            
-//		            for (int k = 0; k < listOfProductcode.size(); k++) {
-//		                String matching = listOfProductcode.get(k);
-//		                if (matching.equals(productCodenext)) {
-//		                    foundMatch = true;
-//		                    break; 
-//		                }
-//		            }
-//
-//		            if (!foundMatch) {
-//		                mismatchCount++; 
-//		            }
-//		        }
-//
-//		        if (mismatchCount > 0) {
-//		            Reporter.log("Pagination Is Working", true);
-//		        } else {
-//		            Reporter.log("❌ Pagination Is Not Working", true);
-//		        }
-//		    } else {
-//		        Reporter.log("❌ Next Page Button is not working", true);
-//		    }
-//		} else {
-//		    Reporter.log("❌ 'Numbers of Column on Page' Dropdown is not working", true);
-//		}
-//	}
 
+	}
 
 	public Properties loadPropertiesFile() throws Exception {
 		try (FileInputStream file = new FileInputStream(filepath)) {
@@ -409,14 +343,14 @@ public class allUtility {
 
 	public void sendTextByWeb_Xpath(String locator, String text) {
 		try {
-			String buttonname=wdriver.findElement(By.xpath(locator)).getText();
+			String buttonname = wdriver.findElement(By.xpath(locator)).getText();
 			WebDriverWait wait = new WebDriverWait(wdriver, Duration.ofSeconds(20));
 			WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(locator)));
 			element.sendKeys(text);
 			if (buttonname != null && !buttonname.isEmpty()) {
-				Reporter.log("🔤 In "+buttonname + " Input text field Value '"+text+"' is passed then " ,true);
+				Reporter.log("🔤 In " + buttonname + " Input text field Value '" + text + "' is passed then ", true);
 			} else {
-				Reporter.log("🔤 In Input Text Field '"+ text +"' data is Passed then",true);
+				Reporter.log("🔤 In Input Text Field '" + text + "' data is Passed then", true);
 			}
 			Thread.sleep(300);
 		} catch (Exception e) {
@@ -429,14 +363,14 @@ public class allUtility {
 
 	public void sendTextByWeb_Id(String locator, String text) {
 		try {
-			String buttonname=wdriver.findElement(By.id(locator)).getText();
+			String buttonname = wdriver.findElement(By.id(locator)).getText();
 			WebDriverWait wait = new WebDriverWait(wdriver, Duration.ofSeconds(20));
 			WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.id(locator)));
 			element.sendKeys(text);
 			if (buttonname != null && !buttonname.isEmpty()) {
-				Reporter.log("🔤 In "+buttonname + " Input text field Value '"+text+"' is passed then" ,true);
+				Reporter.log("🔤 In " + buttonname + " Input text field Value '" + text + "' is passed then", true);
 			} else {
-				Reporter.log("🔤 In Input Text Field '"+ text +"' data is Passed then",true);
+				Reporter.log("🔤 In Input Text Field '" + text + "' data is Passed then", true);
 			}
 			Thread.sleep(300);
 		} catch (Exception e) {
@@ -449,14 +383,14 @@ public class allUtility {
 
 	public void clickWeb_ElementByXpath(String locator) {
 		try {
-			String buttonname=wdriver.findElement(By.xpath(locator)).getText();
+			String buttonname = wdriver.findElement(By.xpath(locator)).getText();
 			WebDriverWait wait = new WebDriverWait(wdriver, Duration.ofSeconds(20));
 			WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(locator)));
 			element.click();
 			if (buttonname != null && !buttonname.isEmpty()) {
-				Reporter.log("✅ '"+buttonname + "'---->Button Get clicked then",true);
+				Reporter.log("✅ '" + buttonname + "'---->Button Get clicked then", true);
 			} else {
-				Reporter.log("✅ Button name is not present or is empty but it get clicked then",true);
+				Reporter.log("✅ Button name is not present or is empty but it get clicked then", true);
 			}
 			Thread.sleep(500);
 		} catch (Exception e) {
@@ -465,17 +399,17 @@ public class allUtility {
 			e.printStackTrace();
 
 			try {
-				String buttonname=wdriver.findElement(By.xpath(locator)).getText();
+				String buttonname = wdriver.findElement(By.xpath(locator)).getText();
 				WebElement element = wdriver.findElement(By.xpath(locator));
 				JavascriptExecutor js = (JavascriptExecutor) wdriver;
 				js.executeScript("arguments[0].click();", element);
 				if (buttonname != null && !buttonname.isEmpty()) {
-					Reporter.log("✅ '"+buttonname + "'---->Button Get clicked then",true);
+					Reporter.log("✅ '" + buttonname + "'---->Button Get clicked then", true);
 					System.out.println("Element clicked using JavaScript: " + locator);
 				} else {
-					Reporter.log("✅ Button name is not present or is empty but it get clicked then",true);
+					Reporter.log("✅ Button name is not present or is empty but it get clicked then", true);
 				}
-				
+
 			} catch (Exception jsException) {
 				System.err.println("❌ Error while clicking the web element with JavaScript: " + locator);
 				System.err.println("❌ Exception message: " + jsException.getMessage());
@@ -487,14 +421,14 @@ public class allUtility {
 
 	public void clickWeb_ElementById(String locator) {
 		try {
-			String buttonname=wdriver.findElement(By.id(locator)).getText();
+			String buttonname = wdriver.findElement(By.id(locator)).getText();
 			WebDriverWait wait = new WebDriverWait(wdriver, Duration.ofSeconds(20));
 			WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.id(locator)));
 			element.click();
 			if (buttonname != null && !buttonname.isEmpty()) {
-				Reporter.log("✅ '"+buttonname + "'---->Button Get clicked then",true);
+				Reporter.log("✅ '" + buttonname + "'---->Button Get clicked then", true);
 			} else {
-				Reporter.log("✅ Button name is not present or is empty but it get clicked then",true);
+				Reporter.log("✅ Button name is not present or is empty but it get clicked then", true);
 			}
 			Thread.sleep(500);
 		} catch (Exception e) {
@@ -503,16 +437,16 @@ public class allUtility {
 			e.printStackTrace();
 
 			try {
-				String buttonname=wdriver.findElement(By.id(locator)).getText();
+				String buttonname = wdriver.findElement(By.id(locator)).getText();
 				WebElement element = wdriver.findElement(By.id(locator));
 				JavascriptExecutor js = (JavascriptExecutor) wdriver;
 				js.executeScript("arguments[0].click();", element);
-				
+
 				if (buttonname != null && !buttonname.isEmpty()) {
-					Reporter.log("✅ '"+buttonname + "'---->Button Get clicked then",true);
+					Reporter.log("✅ '" + buttonname + "'---->Button Get clicked then", true);
 					System.out.println("Element clicked using JavaScript: " + locator);
 				} else {
-					Reporter.log("✅ Button name is not present or is empty but it get clicked then",true);
+					Reporter.log("✅ Button name is not present or is empty but it get clicked then", true);
 				}
 			} catch (Exception jsException) {
 				System.err.println("❌ Error while clicking the web element with JavaScript: " + locator);

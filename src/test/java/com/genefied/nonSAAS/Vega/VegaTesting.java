@@ -24,6 +24,9 @@ public class VegaTesting {
 	public WebDriver wdriver;
 	public FileInputStream file;
 	public Properties pro;
+	public static List<TestStepResult> stepResults = new ArrayList<>();
+	
+	String img = System.getProperty("user.dir") + "\\Image\\Vega.jpg";
 	
 	@AfterMethod
 	public void closure() {
@@ -32,10 +35,26 @@ public class VegaTesting {
 			wdriver.quit();
 		}
 	}
+	public void login() {
+        System.out.println("Login step executed");
+    }
+
+    public void dashboard() {
+        System.out.println("Dashboard step executed");
+    }
+
+    public void warrantyForm() {
+        System.out.println("Warranty form step executed");
+    }
+
+    public void warrantyClaim() {
+        System.out.println("Warranty claim step executed");
+    }
 
 	@Test(priority = 1, enabled = true, retryAnalyzer = RetryAnalyzer.class)
 
 	public void User_Registration() throws Exception {
+		
 		allUtility util = new allUtility();
 		pro=util.loadPropertiesFile();
 		wdriver=util.initializeWebDriver();
@@ -84,6 +103,18 @@ public class VegaTesting {
 					}
 				}
 				util.clickWeb_ElementById("verifyno");
+				try {
+				    login();
+				    stepResults.add(new TestStepResult("Login", "PASS"));
+				} catch (Exception e) {
+				    stepResults.add(new TestStepResult("Login", "FAIL"));
+				}
+				try {
+		            dashboard();
+		            stepResults.add(new TestStepResult("Dashboard", "PASS"));
+		        } catch (Exception e) {
+		            stepResults.add(new TestStepResult("Dashboard", "FAIL"));
+		        }
 				Thread.sleep(1000);
 				util.clickWeb_ElementByXpath("//img[@alt='Activate Warranty']");
 				String productcode = util.get_web_Text(By.xpath("//div[@class='diseble_frm nonebr']/h6"));
@@ -92,7 +123,7 @@ public class VegaTesting {
 				Assert.assertEquals(productcode, batch);
 				util.sendTextByWeb_Xpath("//input[@placeholder='Pincode *']", "110054");
 				wdriver.findElement(By.xpath("//input[@placeholder='Invoice']"))
-						.sendKeys("C:\\Users\\ganes\\eclipse-workspace\\webAutomation\\Image\\Vega.jpg");
+						.sendKeys(img);
 				WebElement day = wdriver.findElement(By.xpath("(//select[@class='inputbox inht'])[1]"));
 				Select days = new Select(day);
 				days.selectByValue("23");
@@ -105,6 +136,13 @@ public class VegaTesting {
 				util.clickWeb_ElementById("popshow");
 
 				util.clickWeb_ElementByXpath("//span[@class='close_btn']");
+				try {
+		            warrantyForm();
+		            stepResults.add(new TestStepResult("Warranty Form", "PASS"));
+		        } catch (Exception e) {
+		            stepResults.add(new TestStepResult("Warranty Form", "FAIL"));
+		        }
+				
 				String activated_warrenty = util.get_web_Text(By.xpath("//a[normalize-space()='warranty activated']"));
 				Assert.assertEquals(activated_warrenty, "WARRANTY ACTIVATED");
 				util.clickWeb_ElementById("nav-icon3");
@@ -125,11 +163,19 @@ public class VegaTesting {
 						util.sendTextByWeb_Xpath("//textarea[@placeholder='Enter Description']",
 								"Test Description Created During Automation");
 						util.sendTextByWeb_Xpath("//input[@type='file']",
-								"C:\\Users\\ganes\\eclipse-workspace\\webAutomation\\Image\\Vega.jpg");
+								img);
 						util.clickWeb_ElementById("popshow");
 						util.clickWeb_ElementByXpath("//span[@class='close_btn']");
+						
+						
+						try {
+				            warrantyClaim();
+				            stepResults.add(new TestStepResult("Warranty Claim", "PASS"));
+				        } catch (Exception e) {
+				            stepResults.add(new TestStepResult("Warranty Claim", "FAIL"));
+				        }
+						
 						break;
-
 					}
 				}
 //				wdriver.switchTo().window(tabs.get(0));
