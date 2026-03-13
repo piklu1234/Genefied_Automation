@@ -27,12 +27,12 @@ public class EmailSender {
 
     public void sendReport() throws Exception {
 
-        allUtility util = new allUtility();
+//        allUtility util = new allUtility();
 //        pro = util.loadPropertiesFile();
 
         final String fromEmail = "ganesh@genefied.ai";
         final String password = System.getenv("EMAIL_PASS");
-        final String toEmail = "Satgan1764@gmail.com";
+        final String toEmail = "utkarsh@genefied.ai";
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");

@@ -3,12 +3,11 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="com.genefied.nonSAAS.Vega.VegaTesting">
+      <class name="com.genefied.nonSAAS.Vega.test">
         <methods>
-          <include name="closure"/>
-          <include name="User_Registration"/>
+          <include name="testautomation"/>
         </methods>
-      </class> <!-- com.genefied.nonSAAS.Vega.VegaTesting -->
+      </class> <!-- com.genefied.nonSAAS.Vega.test -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
