@@ -39,47 +39,48 @@ public class allUtility {
 		wdriver.quit();
 	}
 
-//	public ChromeDriver initializeWebDriver() throws MalformedURLException, InterruptedException {
-////		WebDriverManager.chromedriver().setup();
-////		wdriver = new ChromeDriver();
-//		ChromeOptions options = new ChromeOptions();
-//		String headless = System.getenv("HEADLESS");
-//		if("true".equalsIgnoreCase(headless)) {
-//			options.addArguments("--headless=new");
-//	        options.addArguments("--no-sandbox");
-//	        options.addArguments("--disable-dev-shm-usage");
-//	        options.addArguments("--disable-gpu");
-//	        options.addArguments("--window-size=1920,1080");
-//	        options.addArguments("--remote-allow-origins=*");
-//	        options.setBinary("/usr/bin/chromium-browser");
-//		}
-//		wdriver = new ChromeDriver(options);
-//		wdriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
-//		wdriver.manage().window().maximize();
-//		Thread.sleep(300);
-//		return wdriver;
-//	}
-	public ChromeDriver initializeWebDriver() {
-
-	    ChromeDriver wdriver;
-	    ChromeOptions options = new ChromeOptions();
-	    String headless = System.getenv("HEADLESS");
-	    if ("true".equalsIgnoreCase(headless)) {
-	        options.addArguments("--headless=new");
+	public ChromeDriver initializeWebDriver() throws MalformedURLException, InterruptedException {
+//		WebDriverManager.chromedriver().setup();
+//		wdriver = new ChromeDriver();
+		ChromeOptions options = new ChromeOptions();
+		String headless = System.getenv("HEADLESS");
+		if("true".equalsIgnoreCase(headless)) {
+			options.addArguments("--headless=new");
 	        options.addArguments("--no-sandbox");
 	        options.addArguments("--disable-dev-shm-usage");
 	        options.addArguments("--disable-gpu");
 	        options.addArguments("--window-size=1920,1080");
 	        options.addArguments("--remote-allow-origins=*");
-	        options.addArguments("--remote-debugging-port=9222");
-	        options.setBinary("/snap/bin/chromium");
-	    }
-	    System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
-	    wdriver = new ChromeDriver(options);
-	    wdriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
-	    wdriver.manage().window().maximize();
-	    return wdriver;
+	        options.setBinary("/usr/bin/chromium-browser");
+		}
+		wdriver = new ChromeDriver(options);
+		wdriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+		wdriver.manage().window().maximize();
+		Thread.sleep(300);
+		return wdriver;
 	}
+//	public ChromeDriver initializeWebDriver() {
+//
+//	    ChromeDriver wdriver;
+//	    ChromeOptions options = new ChromeOptions();
+//	    String headless = System.getenv("HEADLESS");
+//	    if ("true".equalsIgnoreCase(headless)) {
+//	        options.addArguments("--headless=new");
+//	        options.addArguments("--no-sandbox");
+//	        options.addArguments("--disable-dev-shm-usage");
+//	        options.addArguments("--disable-gpu");
+//	        options.addArguments("--window-size=1920,1080");
+//	        options.addArguments("--remote-allow-origins=*");
+//	        options.addArguments("--remote-debugging-port=9222");
+//	        options.setBinary("/snap/bin/chromium");
+//	        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+//	    }
+//	   
+//	    wdriver = new ChromeDriver(options);
+//	    wdriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
+//	    wdriver.manage().window().maximize();
+//	    return wdriver;
+//	}
 
 //	public void response() {
 //	    DevTools devTools = wdriver.getDevTools();
