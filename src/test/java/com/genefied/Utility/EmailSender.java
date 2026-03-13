@@ -32,7 +32,7 @@ public class EmailSender {
 
         final String fromEmail = "ganesh@genefied.ai";
         final String password = System.getenv("EMAIL_PASS");
-        final String toEmail = "utkarsh@genefied.ai";
+        final String toEmail = "satgan1764@gmail.com";
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
