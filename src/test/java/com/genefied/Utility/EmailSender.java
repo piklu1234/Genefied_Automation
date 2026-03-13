@@ -130,7 +130,7 @@ public class EmailSender {
 
             Transport.send(message);
 
-            Reporter.log("Email Sent Successfully!", true);
+            Reporter.log("Ganesh Email Sent Successfully!", true);
 
         } catch (Exception e) {
             e.printStackTrace();
