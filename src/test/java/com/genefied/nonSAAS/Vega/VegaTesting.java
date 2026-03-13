@@ -31,7 +31,8 @@ public class VegaTesting {
 	public Properties pro;
 	public static List<TestStepResult> stepResults = new ArrayList<>();
 
-	String img = System.getProperty("user.dir") + "\\Image\\Vega.jpg";
+//	String img = System.getProperty("user.dir") + "\\Image\\Vega.jpg"; // for windows only
+	String img = System.getProperty("user.dir") + "/Image/Vega.jpg";   //for linux server and window as well
 
 	@AfterMethod
 	public void closure() {
