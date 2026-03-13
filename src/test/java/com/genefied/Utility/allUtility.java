@@ -45,9 +45,13 @@ public class allUtility {
 		ChromeOptions options = new ChromeOptions();
 		String headless = System.getenv("HEADLESS");
 		if("true".equalsIgnoreCase(headless)) {
-		options.addArguments("--headless=new");
-		options.addArguments("--no-sandbox");
-		options.addArguments("--disable-dev-shm-usage");
+			options.addArguments("--headless=new");
+	        options.addArguments("--no-sandbox");
+	        options.addArguments("--disable-dev-shm-usage");
+	        options.addArguments("--disable-gpu");
+	        options.addArguments("--window-size=1920,1080");
+	        options.addArguments("--remote-allow-origins=*");
+	        options.setBinary("/usr/bin/chromium-browser");
 		}
 		wdriver = new ChromeDriver(options);
 		wdriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
