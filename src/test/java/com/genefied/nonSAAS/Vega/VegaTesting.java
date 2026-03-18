@@ -188,6 +188,7 @@ public class VegaTesting {
 		} catch (Exception e) {
 			stepResults.add(new TestStepResult("Warranty Form", "FAIL"));
 		}
+		
 
 		String activated_warrenty = util.get_web_Text(By.xpath("//a[normalize-space()='warranty activated']"));
 		Assert.assertEquals(activated_warrenty, "WARRANTY ACTIVATED");
